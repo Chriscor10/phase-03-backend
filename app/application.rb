@@ -20,22 +20,27 @@ class Application
              [ companies.to_json ]
             ]
 
-          elsif req.path.match(/companies/) && req.get?
+          elsif req.path.match(/services/) && req.get?
             id = req.path.split('/')[2]
-            company = Company.find_by(id: id)
-            if company
+            service = Service.find_by(id: id)
+            if service
+              companies = service.companies
+              service_res = {
+                service: service.service,
+                companies: companies
+              }
               return [
-                200,
-                 { 'Content-Type' => 'application/json' }, 
-                 [ company.to_json ]
-                ]
-              elsif
-                [
-                  404,
-                   { 'Content-Type' => 'application/json' }, 
-                   [ { error: 'Company not found'}.to_json ]
-                  ]
-                end
+                200, 
+                { 'Content-Type' => 'application/json' }, 
+                [ service_res.to_json ]
+              ]
+            else
+              return [
+                204, 
+                { 'Content-Type' => 'application/json' }, 
+                [ { error: 'Service not found' }.to_json ]
+              ]
+            end
 
     else
       resp.write "Path Not Found"
