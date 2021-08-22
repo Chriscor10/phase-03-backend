@@ -23,12 +23,14 @@ class Application
 
     elsif req.path == '/services' && req.get?
       services = Service.all
+      
       return [
         200, 
         { 'Content-Type' => 'application/json' }, 
         [ services.to_json ]
       ]
-    
+   
+
     elsif req.path.match(/services/) && req.get?
       id = req.path.split('/')[2]
       service = Service.find_by(id: id)
