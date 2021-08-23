@@ -29,7 +29,25 @@ class Application
         { 'Content-Type' => 'application/json' }, 
         [ services.to_json ]
       ]
-   
+      
+    elsif req.path.match('/companies/') && req.delete?
+      id = req.path.split('/')[2]
+      begin
+        companies = Company.find(id)
+        companies.destroy
+        return [200, {'Content-Type' => 'application/json'}, [{message: "Company Destroyed"}.to_json]]
+      rescue
+        return [404, {'Content-Type' => 'application/json'}, [{message: "Company not found"}.to_json]]
+      end
+
+    elsif req.path.match('/companies/') && req.patch?
+      id = req.path.split('/')[2]
+      body = JSON.parse(req.body.read)
+      begin
+        company = Company.find(id)
+        company.update(body)
+        return [202, {'Content-Type' => 'application/json'}, [company.to_json]]
+      end
 
     elsif req.path.match(/services/) && req.get?
       id = req.path.split('/')[2]
@@ -62,3 +80,4 @@ class Application
   end
 
 end
+
